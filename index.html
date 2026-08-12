@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Control & Analítica - Power BI</title>
+  <title>DASHBOARD DE CONTROL DE PRUEBAS DE I+D</title>
   
-  <!-- Fuental Google Inter & Iconos FontAwesome -->
+  <!-- Tipografía Inter e Iconos FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* RESET & ESTILOS BASE */
     * {
       margin: 0;
       padding: 0;
@@ -20,228 +19,214 @@
       font-family: 'Inter', -apple-system, sans-serif;
     }
 
-    body {
-      background-color: #0F172A; /* Fondo oscuro moderno para resaltar el reporte */
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* Elimina barras de desplazamiento externas */
+      background-color: #0F172A;
       color: #F8FAFC;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden; /* Evita doble scroll */
     }
 
-    /* BARRA SUPERIOR (HEADER INTEGRADO) */
-    .top-bar {
+    /* BARRA SUPERIOR COMPACTA Y FUNCIONAL */
+    .header-bar {
+      height: 60px;
       background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
       border-bottom: 1px solid #334155;
-      padding: 12px 24px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      z-index: 10;
-    }
-
-    /* TÍTULO Y BADGE */
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      background: rgba(37, 99, 235, 0.2);
-      border: 1px solid #3B82F6;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #60A5FA;
-      font-size: 1.2rem;
-    }
-
-    .brand-text h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: #FFFFFF;
-    }
-
-    .brand-text p {
-      font-size: 0.78rem;
-      color: #94A3B8;
-    }
-
-    /* TARJETAS METRICAS RESUMEN (KPI TOP BAR) */
-    .kpi-container {
-      display: flex;
       gap: 16px;
+      z-index: 100;
     }
 
-    .kpi-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid #334155;
-      padding: 6px 14px;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 120px;
-    }
-
-    .kpi-card .kpi-label {
-      font-size: 0.7rem;
-      color: #94A3B8;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .kpi-card .kpi-val {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #38BDF8;
-    }
-
-    /* BOTONES DE ACCIÓN Y ESTADO */
-    .actions-section {
+    /* SECCIÓN TÍTULO */
+    .title-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .status-pill {
-      display: inline-flex;
+    .title-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid #3B82F6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #60A5FA;
+      font-size: 1.1rem;
+    }
+
+    .title-text h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: #FFFFFF;
+      text-transform: uppercase;
+    }
+
+    .title-text .update-tag {
+      font-size: 0.73rem;
+      color: #94A3B8;
+      display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .update-tag i {
+      color: #38BDF8;
+    }
+
+    /* SECCIÓN DE NAVEGACIÓN Y SELECTOR DE HOJAS */
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .view-badge {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid #334155;
       padding: 6px 12px;
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      color: #4ADE80;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .view-badge strong {
+      color: #38BDF8;
       font-weight: 600;
     }
 
-    .status-pill .pulse-dot {
-      width: 7px;
-      height: 7px;
-      background-color: #22C55E;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #22C55E;
+    /* COMBO BOX DE HOJAS DEL REPORTE */
+    .sheet-selector {
+      background: #1E293B;
+      border: 1px solid #3B82F6;
+      color: #F8FAFC;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .btn-action {
-      background: #1E293B;
-      border: 1px solid #475569;
-      color: #F8FAFC;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 500;
+    .sheet-selector:hover {
+      background: #334155;
+    }
+
+    /* ACCIONES */
+    .actions-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-expand {
+      background: #2563EB;
+      border: 1px solid #3B82F6;
+      color: #FFFFFF;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
+      gap: 6px;
+      transition: background 0.2s;
     }
 
-    .btn-action:hover {
-      background: #334155;
-      border-color: #64748B;
-    }
-
-    .btn-primary {
-      background: #2563EB;
-      border-color: #3B82F6;
-    }
-
-    .btn-primary:hover {
+    .btn-expand:hover {
       background: #1D4ED8;
     }
 
-    /* CONTENEDOR PRINCIPAL DEL POWER BI (MÁXIMO TAMAÑO) */
-    .dashboard-viewport {
-      flex: 1;
+    /* ÁREA PRINCIPAL PROTAGONISTA (POWER BI) */
+    .viewport-container {
       width: 100%;
-      height: calc(100vh - 67px); /* Ocupa todo el resto de la pantalla */
+      height: calc(100vh - 60px);
       position: relative;
       background-color: #0F172A;
     }
 
-    .dashboard-viewport iframe {
+    .viewport-container iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
     }
-
-    /* OCULTAR KPIS EN PANTALLAS PEQUEÑAS */
-    @media (max-width: 900px) {
-      .kpi-container {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR DE CONTROL -->
-  <header class="top-bar">
+  <!-- ENCABEZADO DE CONTROL -->
+  <header class="header-bar">
     
-    <!-- Título / Logotipo -->
-    <div class="brand-section">
-      <div class="brand-icon">
-        <i class="fa-solid fa-flask-vial"></i>
+    <!-- Título de la Aplicación -->
+    <div class="title-group">
+      <div class="title-icon">
+        <i class="fa-solid fa-vial-circle-check"></i>
       </div>
-      <div class="brand-text">
-        <h1>Centro de Monitoreo de Ensayos & Consumos</h1>
-        <p>Control Estratégico de Diseños de Mezcla</p>
-      </div>
-    </div>
-
-    <!-- Indicadores Rápidos (KPIs Complementarios) -->
-    <div class="kpi-container">
-      <div class="kpi-card">
-        <span class="kpi-label">Estado</span>
-        <span class="kpi-val">Optimizado</span>
-      </div>
-      <div class="kpi-card">
-        <span class="kpi-label">Vista Actual</span>
-        <span class="kpi-val">Consumo & Costos</span>
+      <div class="title-text">
+        <h1>Dashboard de Control de Pruebas de I+D</h1>
+        <div class="update-tag">
+          <i class="fa-regular fa-clock"></i>
+          <span>Última actualización: <strong>12/08/2026 - 14:50 hrs</strong></span>
+        </div>
       </div>
     </div>
 
-    <!-- Acciones / Pantalla Completa -->
-    <div class="actions-section">
-      <div class="status-pill">
-        <span class="pulse-dot"></span>
-        <span>Datos Actualizados</span>
+    <!-- Selector de Hojas + Indicador de Vista -->
+    <div class="nav-group">
+      <div class="view-badge">
+        <span>Vista Activa:</span>
+        <strong id="activeViewLabel">CONSUMO</strong>
       </div>
-      
-      <button class="btn-action btn-primary" onclick="maximizeReport()">
+
+      <!-- Combo Box para seleccionar hojas detectadas -->
+      <select class="sheet-selector" id="sheetSelect" onchange="changeSheet(this.value)">
+        <option value="CONSUMO" selected>📄 Ir a: CONSUMO</option>
+        <option value="RESULTADOS">📄 Ir a: RESULTADOS</option>
+        <option value="ARENA_PIEDRA">📄 Ir a: ARENA_PIEDRA</option>
+      </select>
+    </div>
+
+    <!-- Botón Ampliar Vista -->
+    <div class="actions-group">
+      <button class="btn-expand" onclick="maximizeView()">
         <i class="fa-solid fa-expand"></i> Ampliar Vista
       </button>
     </div>
 
   </header>
 
-  <!-- ÁREA PROTAGONISTA DEL DASHBOARD -->
-  <main class="dashboard-viewport" id="reportContainer">
+  <!-- CONTENEDOR DEL POWER BI EN TAMAÑO MÁXIMO -->
+  <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
       title="RR_ACTUALIZADO" 
-      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&actionBarEnabled=true" 
+      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageName=ReportSection" 
       allow="fullscreen"
-      allowFullScreen="true"
-      loading="eager">
+      allowFullScreen="true">
     </iframe>
   </main>
 
   <script>
-    // Maximiza el contenedor a pantalla completa
-    function maximizeReport() {
-      const container = document.getElementById('reportContainer');
+    // Actualiza la etiqueta cuando cambias de hoja en el Combo Box
+    function changeSheet(selectedSheet) {
+      document.getElementById('activeViewLabel').innerText = selectedSheet;
+    }
+
+    // Ampliar vista a Pantalla Completa
+    function maximizeView() {
+      const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
         if (container.requestFullscreen) {
           container.requestFullscreen();
