@@ -65,9 +65,27 @@
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
     .export-status { font-size: 0.75rem; color: #60A5FA; margin-top: 10px; min-height: 16px; }
 
+    /* ------------------------------------------------------------
+       CONTENEDOR DE IMPRESIÓN
+       Oculto en pantalla. Solo se vuelve visible durante @media print,
+       y ahí es lo ÚNICO que se ve, así el navegador combina TODOS los
+       iframes que metamos dentro en un solo documento/PDF con varias
+       páginas (una por hoja seleccionada).
+    ------------------------------------------------------------- */
+    #printContainer { display: none; }
+
     @media print {
-      .header-bar, .modal-overlay { display: none !important; }
-      .viewport-container { height: 100vh !important; }
+      .header-bar, .modal-overlay, .viewport-container { display: none !important; }
+
+      #printContainer { display: block !important; }
+      #printContainer iframe {
+        width: 100%;
+        height: 100vh;
+        border: none;
+        display: block;
+        page-break-after: always;
+      }
+      #printContainer iframe:last-child { page-break-after: auto; }
     }
   </style>
 </head>
@@ -86,7 +104,7 @@
     </div>
 
     <div class="actions-group">
-      <button class="btn-action" onclick="openExportModal()">
+      <button class="btn-action" id="btnExportModal" onclick="openExportModal()">
         <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
       </button>
       <button class="btn-action btn-primary" onclick="maximizeView()">
@@ -105,12 +123,15 @@
     </iframe>
   </main>
 
+  <!-- Contenedor donde se cargan las hojas a exportar. Oculto salvo al imprimir. -->
+  <div id="printContainer"></div>
+
   <div class="modal-overlay" id="exportModal">
     <div class="modal-card">
       <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
       <p class="modal-note">
-        Cada hoja seleccionada se abrirá en el visor y se lanzará el diálogo de impresión del navegador
-        (elige "Guardar como PDF"). Si seleccionas varias, se procesan una por una, en orden.
+        Se abrirá UN SOLO diálogo de impresión con todas las hojas seleccionadas, una por página.
+        Elige "Guardar como PDF" y listo: un solo archivo con todas las hojas juntas.
       </p>
 
       <div class="form-group">
@@ -168,6 +189,11 @@
       arenaPiedra:  "PON_AQUI_pageName_DE_ARENA_PIEDRA"
     };
 
+    // Tiempo máximo de espera (ms) para que cada hoja termine de cargar
+    // antes de imprimir, por si el evento "load" del iframe no dispara
+    // (pasa seguido con contenido de otro dominio, como Power BI).
+    const LOAD_TIMEOUT_MS = 4000;
+
     // =========================================================
 
     function buildUrl(pageName) {
@@ -219,44 +245,75 @@
       document.getElementById('exportModal').style.display = 'none';
     }
 
-    // ---- 3. EXPORTACIÓN POR HOJA (navega el iframe y lanza impresión) ----
+    // ---- 3. EXPORTACIÓN COMBINADA EN UN SOLO PDF ----
+    // Carga cada hoja seleccionada en su propio iframe dentro de
+    // #printContainer y dispara UN SOLO window.print(). El navegador
+    // imprime cada iframe como una página distinta del mismo documento,
+    // así que al "Guardar como PDF" sale un único archivo con todas
+    // las hojas elegidas, en el orden en que se marcaron.
     async function startExport() {
       const selected = [];
       if (document.getElementById('chkResultados').checked) selected.push({ name: "RESULTADOS", pageId: PAGE_IDS.resultados });
       if (document.getElementById('chkConsumo').checked) selected.push({ name: "CONSUMO", pageId: PAGE_IDS.consumo });
       if (document.getElementById('chkArenaPiedra').checked) selected.push({ name: "ARENA_PIEDRA", pageId: PAGE_IDS.arenaPiedra });
 
+      const status = document.getElementById('exportStatus');
+
       if (selected.length === 0) {
-        document.getElementById('exportStatus').innerText = "Selecciona al menos una hoja.";
+        status.innerText = "Selecciona al menos una hoja.";
         return;
       }
 
       const btn = document.getElementById('btnGenerarPdf');
-      const status = document.getElementById('exportStatus');
       btn.disabled = true;
-      closeExportModal();
+      status.innerText = `Preparando ${selected.length} hoja(s)...`;
 
-      const frame = document.getElementById('powerbiFrame');
-      const originalSrc = frame.src;
+      const printContainer = document.getElementById('printContainer');
+      printContainer.innerHTML = ""; // limpia intentos anteriores
 
-      for (let i = 0; i < selected.length; i++) {
-        const page = selected[i];
-        status.innerText = `Preparando "${page.name}" (${i + 1}/${selected.length})...`;
+      // Crea un iframe por cada hoja seleccionada y espera a que cargue
+      // (o al timeout, lo que ocurra primero — Power BI no siempre
+      // dispara "load" de forma confiable por ser contenido externo).
+      const loadPromises = selected.map((page, index) => {
+        return new Promise((resolve) => {
+          const frame = document.createElement('iframe');
+          frame.setAttribute('title', page.name);
+          frame.src = buildUrl(page.pageId);
 
-        frame.src = buildUrl(page.pageId);
-        await waitMs(2500); // da tiempo a que cargue la página del reporte
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            resolve();
+          };
 
-        // Cada hoja se imprime por separado: el navegador abrirá el diálogo
-        // de "Guardar como PDF" una vez por hoja. Guarda cada archivo con
-        // un nombre distinto (ej: RESULTADOS.pdf, CONSUMO.pdf...).
-        window.print();
+          frame.addEventListener('load', finish);
+          setTimeout(finish, LOAD_TIMEOUT_MS);
 
-        await waitMs(800);
-      }
+          printContainer.appendChild(frame);
+        });
+      });
 
-      frame.src = originalSrc;
-      btn.disabled = false;
+      await Promise.all(loadPromises);
+
+      status.innerText = "Abriendo diálogo de impresión (elige 'Guardar como PDF')...";
+
+      // Pequeño respiro extra para que Power BI termine de renderizar
+      // los visuales antes de tomar la "foto" de impresión.
+      await waitMs(1500);
+
+      window.print();
     }
+
+    // Limpieza después de imprimir (o cancelar el diálogo), sin importar
+    // cómo se cerró — reutilizamos 'afterprint', que el navegador dispara
+    // tanto si se guarda el PDF como si se cancela.
+    window.addEventListener('afterprint', () => {
+      document.getElementById('printContainer').innerHTML = "";
+      document.getElementById('btnGenerarPdf').disabled = false;
+      document.getElementById('exportStatus').innerText = "";
+      closeExportModal();
+    });
 
     function waitMs(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
