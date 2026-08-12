@@ -37,6 +37,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      position: relative;
       z-index: 100;
     }
 
@@ -74,25 +75,6 @@
       gap: 6px;
     }
 
-    /* NAVEGACIÓN Y SELECTOR DE HOJAS */
-    .nav-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .sheet-selector {
-      background: #1E293B;
-      border: 1px solid #3B82F6;
-      color: #F8FAFC;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
-    }
-
     /* BOTONES DE ACCIÓN */
     .actions-group {
       display: flex;
@@ -104,7 +86,7 @@
       background: #1E293B;
       border: 1px solid #475569;
       color: #FFFFFF;
-      padding: 7px 12px;
+      padding: 8px 14px;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 600;
@@ -128,12 +110,16 @@
       background: #1D4ED8;
     }
 
-    /* CONTENEDOR DEL POWER BI */
+    /* CONTENEDOR DEL POWER BI CON ZOOM AL 110% */
     .viewport-container {
       width: 100%;
       height: calc(100vh - 60px);
       position: relative;
       background-color: #0F172A;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .viewport-container iframe {
@@ -141,91 +127,23 @@
       height: 100%;
       border: none;
       display: block;
+
+      /* APLICAR ACERCAMIENTO / ZOOM AL 110% */
+      transform: scale(1.1);
+      transform-origin: center center;
     }
 
-    /* MODAL DE EXPORTACIÓN A PDF */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-card {
-      background: #1E293B;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      width: 480px;
-      max-width: 90%;
-      padding: 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: #94A3B8;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    .form-group input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      background: #0F172A;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      color: #FFFFFF;
-      font-size: 0.85rem;
-      outline: none;
-    }
-
-    .checkbox-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: #0F172A;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.82rem;
-      color: #E2E8F0;
-      cursor: pointer;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
+    /* ESTILOS PARA LA IMPRESIÓN / DESCARGA A PDF */
+    @media print {
+      .header-bar {
+        display: none !important; /* Oculta la barra superior al exportar a PDF */
+      }
+      .viewport-container {
+        height: 100vh !important;
+      }
+      .viewport-container iframe {
+        transform: scale(1) !important; /* Mantiene escala normal en PDF */
+      }
     }
   </style>
 </head>
@@ -242,25 +160,15 @@
         <h1>Dashboard de Control de Pruebas de I+D</h1>
         <div class="update-tag">
           <i class="fa-regular fa-clock"></i>
-          <span>Última actualización: <strong>12/08/2026 - 14:50 hrs</strong></span>
+          <span>Última actualización: <strong id="lastUpdateText">--/--/---- --:-- hrs</strong></span>
         </div>
       </div>
     </div>
 
-    <!-- SELECTOR NAVEGADOR DE HOJAS REAL -->
-    <div class="nav-group">
-      <label for="sheetSelect" style="font-size: 0.8rem; color: #94A3B8; font-weight: 600;">Sección:</label>
-      <select class="sheet-selector" id="sheetSelect" onchange="navigateToSheet(this.value)">
-        <option value="CONSUMO" selected>📄 CONSUMO</option>
-        <option value="RESULTADOS">📄 RESULTADOS</option>
-        <option value="ARENA_PIEDRA">📄 ARENA_PIEDRA</option>
-      </select>
-    </div>
-
-    <!-- ACCIONES -->
+    <!-- ACCIONES: DESCARGAR PDF Y AMPLIAR VISTA -->
     <div class="actions-group">
-      <button class="btn-action" onclick="openExportModal()">
-        <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
+      <button class="btn-action" onclick="downloadPDF()">
+        <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Descargar PDF
       </button>
 
       <button class="btn-action btn-primary" onclick="maximizeView()">
@@ -270,86 +178,37 @@
 
   </header>
 
-  <!-- VISOR POWER BI -->
+  <!-- VISOR POWER BI (INICIA EN RESULTADOS CON ZOOM 110%) -->
   <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
       title="RR_ACTUALIZADO" 
-      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageName=ReportSection" 
+      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageName=ReportSection1" 
       allow="fullscreen"
       allowFullScreen="true">
     </iframe>
   </main>
 
-  <!-- MODAL PARA EXPORTAR A PDF SELECCIONANDO GRAFICOS Y TÍTULO -->
-  <div class="modal-overlay" id="exportModal">
-    <div class="modal-card">
-      <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Configurar Exportación a PDF</h2>
-      
-      <div class="form-group">
-        <label for="pdfTitle">Título del Reporte PDF:</label>
-        <input type="text" id="pdfTitle" value="Reporte de Ensayos I+D - Control de Pruebas">
-      </div>
-
-      <div class="form-group">
-        <label>Selecciona las gráficas / secciones a incluir:</label>
-        <div class="checkbox-list">
-          <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Cemento y Adición
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Agua y Aditivos
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Piedra y Arena
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" checked> Gráfica de Costos (S/.)
-          </label>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
-        <button class="btn-action btn-primary" onclick="triggerPrint()">
-          <i class="fa-solid fa-download"></i> Generar Documento
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // URL base de tu reporte
-    const baseUrl = "https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299";
+    // 1. Genera automáticamente la fecha y hora de la última actualización
+    function setLiveTimestamp() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
 
-    // Mapeo de secciones para cambiar de página de forma real
-    const pageMap = {
-      "CONSUMO": "ReportSection",
-      "RESULTADOS": "ReportSection1",
-      "ARENA_PIEDRA": "ReportSection2"
-    };
-
-    function navigateToSheet(sheetName) {
-      const frame = document.getElementById('powerbiFrame');
-      const section = pageMap[sheetName] || "ReportSection";
-      frame.src = `${baseUrl}&pageName=${section}`;
+      const formattedString = `${day}/${month}/${year} - ${hours}:${minutes} hrs`;
+      document.getElementById('lastUpdateText').innerText = formattedString;
     }
 
-    // Modal Exportación PDF
-    function openExportModal() {
-      document.getElementById('exportModal').style.display = 'flex';
+    // 2. Función para descargar la página actual en PDF
+    function downloadPDF() {
+      window.print();
     }
 
-    function closeExportModal() {
-      document.getElementById('exportModal').style.display = 'none';
-    }
-
-    function triggerPrint() {
-      closeExportModal();
-      window.print(); // Abre el diálogo nativo para guardar como PDF
-    }
-
-    // Pantalla Completa
+    // 3. Función para Pantalla Completa
     function maximizeView() {
       const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
@@ -364,6 +223,9 @@
         }
       }
     }
+
+    // Ejecuta la fecha al cargar la página
+    window.onload = setLiveTimestamp;
   </script>
 
 </body>
