@@ -3,320 +3,252 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Control I+D - Power BI</title>
+  <title>Portal de Control & Analítica - Power BI</title>
   
-  <!-- Fuente tipográfica moderna (Inter) e iconos (Boxicons) -->
+  <!-- Fuental Google Inter & Iconos FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* RESET & VARS */
+    /* RESET & ESTILOS BASE */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    :root {
-      --bg-body: #F3F4F6;
-      --bg-card: #FFFFFF;
-      --primary: #1E293B;
-      --accent: #2563EB;
-      --text-main: #0F172A;
-      --text-muted: #64748B;
-      --border-color: #E2E8F0;
-      --sidebar-width: 260px;
+      font-family: 'Inter', -apple-system, sans-serif;
     }
 
     body {
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      display: flex;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* BARRA LATERAL (SIDEBAR) */
-    .sidebar {
-      width: var(--sidebar-width);
-      background-color: var(--primary);
-      color: #FFFFFF;
+      background-color: #0F172A; /* Fondo oscuro moderno para resaltar el reporte */
+      color: #F8FAFC;
       display: flex;
       flex-direction: column;
-      padding: 24px 16px;
-      position: fixed;
       height: 100vh;
-      z-index: 100;
+      overflow: hidden; /* Evita doble scroll */
     }
 
-    .brand {
+    /* BARRA SUPERIOR (HEADER INTEGRADO) */
+    .top-bar {
+      background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
+      border-bottom: 1px solid #334155;
+      padding: 12px 24px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 24px;
+      justify-content: space-between;
+      gap: 20px;
+      z-index: 10;
     }
 
-    .brand i {
-      font-size: 28px;
-      color: #38BDF8;
+    /* TÍTULO Y BADGE */
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
-    .brand h2 {
-      font-size: 1.1rem;
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid #3B82F6;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #60A5FA;
+      font-size: 1.2rem;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .menu {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .menu li a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      color: #94A3B8;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .menu li.active a, .menu li a:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+      letter-spacing: -0.3px;
       color: #FFFFFF;
     }
 
-    .menu li.active a i {
-      color: #38BDF8;
+    .brand-text p {
+      font-size: 0.78rem;
+      color: #94A3B8;
     }
 
-    /* CONTENIDO PRINCIPAL */
-    .main-content {
-      margin-left: var(--sidebar-width);
-      flex: 1;
+    /* TARJETAS METRICAS RESUMEN (KPI TOP BAR) */
+    .kpi-container {
       display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      width: calc(100% - var(--sidebar-width));
-    }
-
-    /* HEADER SUPERIOR */
-    .top-header {
-      background-color: var(--bg-card);
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 90;
-    }
-
-    .header-title h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .header-title p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
       gap: 16px;
     }
 
-    .badge-status {
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid #334155;
+      padding: 6px 14px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 120px;
+    }
+
+    .kpi-card .kpi-label {
+      font-size: 0.7rem;
+      color: #94A3B8;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .kpi-card .kpi-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #38BDF8;
+    }
+
+    /* BOTONES DE ACCIÓN Y ESTADO */
+    .actions-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
-      background-color: #DCFCE7;
-      color: #15803D;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ADE80;
       border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 600;
     }
 
-    .badge-status .dot {
-      width: 8px;
-      height: 8px;
+    .status-pill .pulse-dot {
+      width: 7px;
+      height: 7px;
       background-color: #22C55E;
       border-radius: 50%;
+      box-shadow: 0 0 8px #22C55E;
     }
 
-    .btn-fullscreen {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background-color: var(--bg-body);
-      border: 1px solid var(--border-color);
+    .btn-action {
+      background: #1E293B;
+      border: 1px solid #475569;
+      color: #F8FAFC;
+      padding: 8px 14px;
       border-radius: 8px;
-      color: var(--text-main);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-fullscreen:hover {
-      background-color: #E2E8F0;
-    }
-
-    /* AREA DEL VISOR / DASHBOARD CONTAINER */
-    .dashboard-container {
-      padding: 24px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .report-card {
-      background-color: var(--bg-card);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      overflow: hidden;
-      min-height: 750px; /* Asegura un alto cómodo */
-    }
-
-    .report-card-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .report-card-header h3 {
-      font-size: 1rem;
-      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.2s ease;
     }
 
-    /* CONTENEDOR DEL IFRAME DE POWER BI */
-    .iframe-wrapper {
-      position: relative;
-      width: 100%;
+    .btn-action:hover {
+      background: #334155;
+      border-color: #64748B;
+    }
+
+    .btn-primary {
+      background: #2563EB;
+      border-color: #3B82F6;
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    /* CONTENEDOR PRINCIPAL DEL POWER BI (MÁXIMO TAMAÑO) */
+    .dashboard-viewport {
       flex: 1;
-      background-color: #FAFAFA;
-      min-height: 700px;
+      width: 100%;
+      height: calc(100vh - 67px); /* Ocupa todo el resto de la pantalla */
+      position: relative;
+      background-color: #0F172A;
     }
 
-    .iframe-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .dashboard-viewport iframe {
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
-    /* RESPONSIVE DESIGN */
-    @media (max-width: 1024px) {
-      .sidebar {
+    /* OCULTAR KPIS EN PANTALLAS PEQUEÑAS */
+    @media (max-width: 900px) {
+      .kpi-container {
         display: none;
-      }
-      .main-content {
-        margin-left: 0;
-        width: 100%;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA LATERAL (NAVEGACIÓN) -->
-  <aside class="sidebar">
-    <div class="brand">
-      <i class='bx bx-analyse'></i>
-      <h2>PLATAFORMA I+D</h2>
-    </div>
-    <ul class="menu">
-      <li class="active">
-        <a href="#"><i class='bx bx-bar-chart-square'></i> Consumo & Resultados</a>
-      </li>
-      <li>
-        <a href="#"><i class='bx bx-file'></i> Reportes Genéricos</a>
-      </li>
-      <li>
-        <a href="#"><i class='bx bx-cog'></i> Configuración</a>
-      </li>
-    </ul>
-  </aside>
-
-  <!-- SECCIÓN PRINCIPAL -->
-  <main class="main-content">
+  <!-- BARRA SUPERIOR DE CONTROL -->
+  <header class="top-bar">
     
-    <!-- HEADER SUPERIOR -->
-    <header class="top-header">
-      <div class="header-title">
-        <h1>Control de Consumo - RR_ACTUALIZADO</h1>
-        <p>Sistema de Monitoreo de Investigaciones y Desarrollo</p>
+    <!-- Título / Logotipo -->
+    <div class="brand-section">
+      <div class="brand-icon">
+        <i class="fa-solid fa-flask-vial"></i>
       </div>
-      <div class="header-actions">
-        <span class="badge-status">
-          <span class="dot"></span> En Vivo
-        </span>
-        <button class="btn-fullscreen" onclick="toggleFullScreen()">
-          <i class='bx bx-fullscreen'></i> Pantalla Completa
-        </button>
-      </div>
-    </header>
-
-    <!-- ÁREA DEL REPORTE -->
-    <div class="dashboard-container">
-      <div class="report-card" id="reportCard">
-        <div class="report-card-header">
-          <h3><i class='bx bx-data' style="color: var(--accent);"></i> Dashboard Interactivo Power BI</h3>
-        </div>
-        
-        <div class="iframe-wrapper">
-          <iframe 
-            id="powerbiFrame"
-            title="RR_ACTUALIZADO" 
-            src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&actionBarEnabled=true" 
-            allowFullScreen="true"
-            loading="lazy">
-          </iframe>
-        </div>
+      <div class="brand-text">
+        <h1>Centro de Monitoreo de Ensayos & Consumos</h1>
+        <p>Control Estratégico de Diseños de Mezcla</p>
       </div>
     </div>
 
+    <!-- Indicadores Rápidos (KPIs Complementarios) -->
+    <div class="kpi-container">
+      <div class="kpi-card">
+        <span class="kpi-label">Estado</span>
+        <span class="kpi-val">Optimizado</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Vista Actual</span>
+        <span class="kpi-val">Consumo & Costos</span>
+      </div>
+    </div>
+
+    <!-- Acciones / Pantalla Completa -->
+    <div class="actions-section">
+      <div class="status-pill">
+        <span class="pulse-dot"></span>
+        <span>Datos Actualizados</span>
+      </div>
+      
+      <button class="btn-action btn-primary" onclick="maximizeReport()">
+        <i class="fa-solid fa-expand"></i> Ampliar Vista
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ÁREA PROTAGONISTA DEL DASHBOARD -->
+  <main class="dashboard-viewport" id="reportContainer">
+    <iframe 
+      id="powerbiFrame"
+      title="RR_ACTUALIZADO" 
+      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&actionBarEnabled=true" 
+      allow="fullscreen"
+      allowFullScreen="true"
+      loading="eager">
+    </iframe>
   </main>
 
   <script>
-    // Función para poner el reporte en Pantalla Completa
-    function toggleFullScreen() {
-      const iframe = document.getElementById('powerbiFrame');
+    // Maximiza el contenedor a pantalla completa
+    function maximizeReport() {
+      const container = document.getElementById('reportContainer');
       if (!document.fullscreenElement) {
-        if (iframe.requestFullscreen) {
-          iframe.requestFullscreen();
-        } else if (iframe.webkitRequestFullscreen) { /* Safari */
-          iframe.webkitRequestFullscreen();
-        } else if (iframe.msRequestFullscreen) { /* IE11 */
-          iframe.msRequestFullscreen();
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
         }
       } else {
         if (document.exitFullscreen) {
