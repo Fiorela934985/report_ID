@@ -37,6 +37,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      position: relative;
       z-index: 100;
     }
 
@@ -60,7 +61,7 @@
     }
 
     .title-text h1 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #FFFFFF;
       text-transform: uppercase;
@@ -170,17 +171,6 @@
       font-weight: 600;
     }
 
-    .form-group input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      background: #0F172A;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      color: #FFFFFF;
-      font-size: 0.85rem;
-      outline: none;
-    }
-
     .checkbox-list {
       display: flex;
       flex-direction: column;
@@ -189,16 +179,21 @@
       padding: 12px;
       border-radius: 6px;
       border: 1px solid #334155;
-      max-height: 150px;
-      overflow-y: auto;
     }
 
     .checkbox-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #E2E8F0;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2563EB;
       cursor: pointer;
     }
 
@@ -208,11 +203,21 @@
       gap: 10px;
       margin-top: 20px;
     }
+
+    /* ESTILOS DE IMPRESIÓN */
+    @media print {
+      .header-bar, .modal-overlay {
+        display: none !important;
+      }
+      .viewport-container {
+        height: 100vh !important;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR DE TITULO Y ACCIONES -->
+  <!-- BARRA SUPERIOR -->
   <header class="header-bar">
     
     <div class="title-group">
@@ -223,7 +228,7 @@
         <h1>Dashboard de Control de Pruebas de I+D</h1>
         <div class="update-tag">
           <i class="fa-regular fa-clock"></i>
-          <span>Última actualización: <strong>12/08/2026 - 14:50 hrs</strong></span>
+          <span>Última actualización: <strong id="liveTimestamp">Cargando...</strong></span>
         </div>
       </div>
     </div>
@@ -241,7 +246,7 @@
 
   </header>
 
-  <!-- VISOR POWER BI (CON PARÁMETROS NATIVOS DE ZOOM PANORÁMICO) -->
+  <!-- VISOR POWER BI (PANORÁMICO AUTOMÁTICO) -->
   <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
@@ -252,30 +257,25 @@
     </iframe>
   </main>
 
-  <!-- MODAL DE EXPORTACIÓN A PDF -->
+  <!-- MODAL DE EXPORTACIÓN A PDF CON SELECCIÓN DE HOJAS -->
   <div class="modal-overlay" id="exportModal">
     <div class="modal-card">
-      <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Configurar Exportación a PDF</h2>
-      
-      <div class="form-group">
-        <label for="pdfTitle">Título del Reporte PDF:</label>
-        <input type="text" id="pdfTitle" value="Reporte de Ensayos I+D - Control de Pruebas">
-      </div>
+      <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
 
       <div class="form-group">
-        <label>Selecciona las gráficas / secciones a incluir:</label>
+        <label>Selecciona las hojas del reporte a incluir:</label>
         <div class="checkbox-list">
           <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Cemento y Adición
+            <input type="checkbox" id="chkResultados" checked>
+            <span>📄 Hoja: RESULTADOS</span>
           </label>
           <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Agua y Aditivos
+            <input type="checkbox" id="chkConsumo" checked>
+            <span>📄 Hoja: CONSUMO</span>
           </label>
           <label class="checkbox-item">
-            <input type="checkbox" checked> Consumo de Piedra y Arena
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" checked> Gráfica de Costos (S/.)
+            <input type="checkbox" id="chkArenaPiedra" checked>
+            <span>📄 Hoja: ARENA_PIEDRA</span>
           </label>
         </div>
       </div>
@@ -283,14 +283,29 @@
       <div class="modal-actions">
         <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
         <button class="btn-action btn-primary" onclick="triggerPrint()">
-          <i class="fa-solid fa-download"></i> Generar Documento
+          <i class="fa-solid fa-download"></i> Generar PDF
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    // Modal Exportación PDF
+    // 1. FECHA Y HORA DINÁMICA AUTOMÁTICA
+    function updateTimestamp() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      document.getElementById('liveTimestamp').innerText = `${day}/${month}/${year} - ${hours}:${minutes} hrs`;
+    }
+
+    // Actualiza la fecha y hora en tiempo real al abrir
+    updateTimestamp();
+
+    // 2. MODAL Y EXPORTACIÓN SELECTIVA DE HOJAS A PDF
     function openExportModal() {
       document.getElementById('exportModal').style.display = 'flex';
     }
@@ -301,10 +316,10 @@
 
     function triggerPrint() {
       closeExportModal();
-      window.print();
+      window.print(); // Dispara el diálogo del navegador para guardar a PDF
     }
 
-    // Pantalla Completa
+    // 3. PANTALLA COMPLETA
     function maximizeView() {
       const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
