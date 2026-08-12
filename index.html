@@ -61,7 +61,7 @@
     }
 
     .title-text h1 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #FFFFFF;
       text-transform: uppercase;
@@ -73,6 +73,38 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    /* NAVEGACIÓN ENTRE PÁGINAS (BOTONES) */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: #0F172A;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      background: #2563EB;
+      color: #FFFFFF;
     }
 
     /* BOTONES DE ACCIÓN */
@@ -110,7 +142,7 @@
       background: #1D4ED8;
     }
 
-    /* CONTENEDOR DEL POWER BI CON ZOOM AL 110% */
+    /* CONTENEDOR CON ZOOM AL 40% */
     .viewport-container {
       width: 100%;
       height: calc(100vh - 60px);
@@ -123,26 +155,27 @@
     }
 
     .viewport-container iframe {
-      width: 100%;
-      height: 100%;
+      width: 250%; /* Se compensa el ancho para que la escala al 40% cubra todo el marco */
+      height: 250%;
       border: none;
       display: block;
 
-      /* APLICAR ACERCAMIENTO / ZOOM AL 110% */
-      transform: scale(1.1);
+      /* ESCALA DE ZOOM AL 40% */
+      transform: scale(0.4);
       transform-origin: center center;
     }
 
-    /* ESTILOS PARA LA IMPRESIÓN / DESCARGA A PDF */
     @media print {
       .header-bar {
-        display: none !important; /* Oculta la barra superior al exportar a PDF */
+        display: none !important;
       }
       .viewport-container {
         height: 100vh !important;
       }
       .viewport-container iframe {
-        transform: scale(1) !important; /* Mantiene escala normal en PDF */
+        transform: scale(1) !important;
+        width: 100% !important;
+        height: 100% !important;
       }
     }
   </style>
@@ -160,12 +193,19 @@
         <h1>Dashboard de Control de Pruebas de I+D</h1>
         <div class="update-tag">
           <i class="fa-regular fa-clock"></i>
-          <span>Última actualización: <strong id="lastUpdateText">--/--/---- --:-- hrs</strong></span>
+          <span>Última actualización de datos: <strong>12/08/2026</strong></span>
         </div>
       </div>
     </div>
 
-    <!-- ACCIONES: DESCARGAR PDF Y AMPLIAR VISTA -->
+    <!-- PESTAÑAS DE NAVEGACIÓN -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchPage('ReportSection1', this)">RESULTADOS</button>
+      <button class="tab-btn" onclick="switchPage('ReportSection', this)">CONSUMO</button>
+      <button class="tab-btn" onclick="switchPage('ReportSection2', this)">ARENA_PIEDRA</button>
+    </nav>
+
+    <!-- ACCIONES -->
     <div class="actions-group">
       <button class="btn-action" onclick="downloadPDF()">
         <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Descargar PDF
@@ -178,7 +218,7 @@
 
   </header>
 
-  <!-- VISOR POWER BI (INICIA EN RESULTADOS CON ZOOM 110%) -->
+  <!-- VISOR POWER BI CON ZOOM AL 40% Y PÁGINA INICIAL RESULTADOS -->
   <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
@@ -190,25 +230,26 @@
   </main>
 
   <script>
-    // 1. Genera automáticamente la fecha y hora de la última actualización
-    function setLiveTimestamp() {
-      const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
+    const baseUrl = "https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299";
 
-      const formattedString = `${day}/${month}/${year} - ${hours}:${minutes} hrs`;
-      document.getElementById('lastUpdateText').innerText = formattedString;
+    // Función para cambiar entre las páginas
+    function switchPage(pageSection, element) {
+      // Actualiza iframe
+      const frame = document.getElementById('powerbiFrame');
+      frame.src = `${baseUrl}&pageName=${pageSection}`;
+
+      // Actualiza estado visual de botones
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
     }
 
-    // 2. Función para descargar la página actual en PDF
+    // Imprimir / Guardar a PDF
     function downloadPDF() {
       window.print();
     }
 
-    // 3. Función para Pantalla Completa
+    // Pantalla Completa
     function maximizeView() {
       const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
@@ -223,9 +264,6 @@
         }
       }
     }
-
-    // Ejecuta la fecha al cargar la página
-    window.onload = setLiveTimestamp;
   </script>
 
 </body>
