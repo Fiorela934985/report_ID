@@ -22,12 +22,12 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Elimina barras de desplazamiento externas */
+      overflow: hidden;
       background-color: #0F172A;
       color: #F8FAFC;
     }
 
-    /* BARRA SUPERIOR COMPACTA Y FUNCIONAL */
+    /* BARRA SUPERIOR */
     .header-bar {
       height: 60px;
       background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
@@ -40,7 +40,6 @@
       z-index: 100;
     }
 
-    /* SECCIÓN TÍTULO */
     .title-group {
       display: flex;
       align-items: center;
@@ -61,79 +60,51 @@
     }
 
     .title-text h1 {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
-      letter-spacing: -0.2px;
       color: #FFFFFF;
       text-transform: uppercase;
     }
 
     .title-text .update-tag {
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       color: #94A3B8;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .update-tag i {
-      color: #38BDF8;
-    }
-
-    /* SECCIÓN DE NAVEGACIÓN Y SELECTOR DE HOJAS */
+    /* NAVEGACIÓN Y SELECTOR DE HOJAS */
     .nav-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .view-badge {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid #334155;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.78rem;
-      color: #94A3B8;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .view-badge strong {
-      color: #38BDF8;
-      font-weight: 600;
-    }
-
-    /* COMBO BOX DE HOJAS DEL REPORTE */
     .sheet-selector {
       background: #1E293B;
       border: 1px solid #3B82F6;
       color: #F8FAFC;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 6px;
       font-size: 0.82rem;
       font-weight: 600;
       outline: none;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .sheet-selector:hover {
-      background: #334155;
-    }
-
-    /* ACCIONES */
+    /* BOTONES DE ACCIÓN */
     .actions-group {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .btn-expand {
-      background: #2563EB;
-      border: 1px solid #3B82F6;
+    .btn-action {
+      background: #1E293B;
+      border: 1px solid #475569;
       color: #FFFFFF;
-      padding: 7px 14px;
+      padding: 7px 12px;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 600;
@@ -141,14 +112,23 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
-    .btn-expand:hover {
+    .btn-action:hover {
+      background: #334155;
+    }
+
+    .btn-primary {
+      background: #2563EB;
+      border-color: #3B82F6;
+    }
+
+    .btn-primary:hover {
       background: #1D4ED8;
     }
 
-    /* ÁREA PRINCIPAL PROTAGONISTA (POWER BI) */
+    /* CONTENEDOR DEL POWER BI */
     .viewport-container {
       width: 100%;
       height: calc(100vh - 60px);
@@ -162,17 +142,101 @@
       border: none;
       display: block;
     }
+
+    /* MODAL DE EXPORTACIÓN A PDF */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-card {
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      width: 480px;
+      max-width: 90%;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: #94A3B8;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0F172A;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #E2E8F0;
+      cursor: pointer;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- ENCABEZADO DE CONTROL -->
+  <!-- BARRA SUPERIOR -->
   <header class="header-bar">
     
-    <!-- Título de la Aplicación -->
     <div class="title-group">
       <div class="title-icon">
-        <i class="fa-solid fa-vial-circle-check"></i>
+        <i class="fa-solid fa-flask-vial"></i>
       </div>
       <div class="title-text">
         <h1>Dashboard de Control de Pruebas de I+D</h1>
@@ -183,31 +247,30 @@
       </div>
     </div>
 
-    <!-- Selector de Hojas + Indicador de Vista -->
+    <!-- SELECTOR NAVEGADOR DE HOJAS REAL -->
     <div class="nav-group">
-      <div class="view-badge">
-        <span>Vista Activa:</span>
-        <strong id="activeViewLabel">CONSUMO</strong>
-      </div>
-
-      <!-- Combo Box para seleccionar hojas detectadas -->
-      <select class="sheet-selector" id="sheetSelect" onchange="changeSheet(this.value)">
-        <option value="CONSUMO" selected>📄 Ir a: CONSUMO</option>
-        <option value="RESULTADOS">📄 Ir a: RESULTADOS</option>
-        <option value="ARENA_PIEDRA">📄 Ir a: ARENA_PIEDRA</option>
+      <label for="sheetSelect" style="font-size: 0.8rem; color: #94A3B8; font-weight: 600;">Sección:</label>
+      <select class="sheet-selector" id="sheetSelect" onchange="navigateToSheet(this.value)">
+        <option value="CONSUMO" selected>📄 CONSUMO</option>
+        <option value="RESULTADOS">📄 RESULTADOS</option>
+        <option value="ARENA_PIEDRA">📄 ARENA_PIEDRA</option>
       </select>
     </div>
 
-    <!-- Botón Ampliar Vista -->
+    <!-- ACCIONES -->
     <div class="actions-group">
-      <button class="btn-expand" onclick="maximizeView()">
+      <button class="btn-action" onclick="openExportModal()">
+        <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
+      </button>
+
+      <button class="btn-action btn-primary" onclick="maximizeView()">
         <i class="fa-solid fa-expand"></i> Ampliar Vista
       </button>
     </div>
 
   </header>
 
-  <!-- CONTENEDOR DEL POWER BI EN TAMAÑO MÁXIMO -->
+  <!-- VISOR POWER BI -->
   <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
@@ -218,13 +281,75 @@
     </iframe>
   </main>
 
+  <!-- MODAL PARA EXPORTAR A PDF SELECCIONANDO GRAFICOS Y TÍTULO -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal-card">
+      <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Configurar Exportación a PDF</h2>
+      
+      <div class="form-group">
+        <label for="pdfTitle">Título del Reporte PDF:</label>
+        <input type="text" id="pdfTitle" value="Reporte de Ensayos I+D - Control de Pruebas">
+      </div>
+
+      <div class="form-group">
+        <label>Selecciona las gráficas / secciones a incluir:</label>
+        <div class="checkbox-list">
+          <label class="checkbox-item">
+            <input type="checkbox" checked> Consumo de Cemento y Adición
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked> Consumo de Agua y Aditivos
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked> Consumo de Piedra y Arena
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked> Gráfica de Costos (S/.)
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
+        <button class="btn-action btn-primary" onclick="triggerPrint()">
+          <i class="fa-solid fa-download"></i> Generar Documento
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Actualiza la etiqueta cuando cambias de hoja en el Combo Box
-    function changeSheet(selectedSheet) {
-      document.getElementById('activeViewLabel').innerText = selectedSheet;
+    // URL base de tu reporte
+    const baseUrl = "https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299";
+
+    // Mapeo de secciones para cambiar de página de forma real
+    const pageMap = {
+      "CONSUMO": "ReportSection",
+      "RESULTADOS": "ReportSection1",
+      "ARENA_PIEDRA": "ReportSection2"
+    };
+
+    function navigateToSheet(sheetName) {
+      const frame = document.getElementById('powerbiFrame');
+      const section = pageMap[sheetName] || "ReportSection";
+      frame.src = `${baseUrl}&pageName=${section}`;
     }
 
-    // Ampliar vista a Pantalla Completa
+    // Modal Exportación PDF
+    function openExportModal() {
+      document.getElementById('exportModal').style.display = 'flex';
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').style.display = 'none';
+    }
+
+    function triggerPrint() {
+      closeExportModal();
+      window.print(); // Abre el diálogo nativo para guardar como PDF
+    }
+
+    // Pantalla Completa
     function maximizeView() {
       const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
@@ -232,8 +357,6 @@
           container.requestFullscreen();
         } else if (container.webkitRequestFullscreen) {
           container.webkitRequestFullscreen();
-        } else if (container.msRequestFullscreen) {
-          container.msRequestFullscreen();
         }
       } else {
         if (document.exitFullscreen) {
