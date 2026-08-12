@@ -74,25 +74,6 @@
       gap: 6px;
     }
 
-    /* NAVEGACIÓN Y SELECTOR DE HOJAS */
-    .nav-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .sheet-selector {
-      background: #1E293B;
-      border: 1px solid #3B82F6;
-      color: #F8FAFC;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
-    }
-
     /* BOTONES DE ACCIÓN */
     .actions-group {
       display: flex;
@@ -128,7 +109,7 @@
       background: #1D4ED8;
     }
 
-    /* CONTENEDOR DEL POWER BI */
+    /* CONTENEDOR PRINCIPAL DEL POWER BI */
     .viewport-container {
       width: 100%;
       height: calc(100vh - 60px);
@@ -231,7 +212,7 @@
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR -->
+  <!-- BARRA SUPERIOR DE TITULO Y ACCIONES -->
   <header class="header-bar">
     
     <div class="title-group">
@@ -247,16 +228,6 @@
       </div>
     </div>
 
-    <!-- SELECTOR NAVEGADOR DE HOJAS REAL -->
-    <div class="nav-group">
-      <label for="sheetSelect" style="font-size: 0.8rem; color: #94A3B8; font-weight: 600;">Sección:</label>
-      <select class="sheet-selector" id="sheetSelect" onchange="navigateToSheet(this.value)">
-        <option value="CONSUMO" selected>📄 CONSUMO</option>
-        <option value="RESULTADOS">📄 RESULTADOS</option>
-        <option value="ARENA_PIEDRA">📄 ARENA_PIEDRA</option>
-      </select>
-    </div>
-
     <!-- ACCIONES -->
     <div class="actions-group">
       <button class="btn-action" onclick="openExportModal()">
@@ -270,18 +241,18 @@
 
   </header>
 
-  <!-- VISOR POWER BI -->
+  <!-- VISOR POWER BI (CON PARÁMETROS NATIVOS DE ZOOM PANORÁMICO) -->
   <main class="viewport-container" id="powerbiContainer">
     <iframe 
       id="powerbiFrame"
       title="RR_ACTUALIZADO" 
-      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageName=ReportSection" 
+      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageView=fitToWidth&navContentPaneEnabled=true" 
       allow="fullscreen"
       allowFullScreen="true">
     </iframe>
   </main>
 
-  <!-- MODAL PARA EXPORTAR A PDF SELECCIONANDO GRAFICOS Y TÍTULO -->
+  <!-- MODAL DE EXPORTACIÓN A PDF -->
   <div class="modal-overlay" id="exportModal">
     <div class="modal-card">
       <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Configurar Exportación a PDF</h2>
@@ -319,22 +290,6 @@
   </div>
 
   <script>
-    // URL base de tu reporte
-    const baseUrl = "https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299";
-
-    // Mapeo de secciones para cambiar de página de forma real
-    const pageMap = {
-      "CONSUMO": "ReportSection",
-      "RESULTADOS": "ReportSection1",
-      "ARENA_PIEDRA": "ReportSection2"
-    };
-
-    function navigateToSheet(sheetName) {
-      const frame = document.getElementById('powerbiFrame');
-      const section = pageMap[sheetName] || "ReportSection";
-      frame.src = `${baseUrl}&pageName=${section}`;
-    }
-
     // Modal Exportación PDF
     function openExportModal() {
       document.getElementById('exportModal').style.display = 'flex';
@@ -346,7 +301,7 @@
 
     function triggerPrint() {
       closeExportModal();
-      window.print(); // Abre el diálogo nativo para guardar como PDF
+      window.print();
     }
 
     // Pantalla Completa
