@@ -4,263 +4,114 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DASHBOARD DE CONTROL DE PRUEBAS DE I+D</title>
-  
-  <!-- Tipografía Inter e Iconos FontAwesome -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background-color: #0F172A; color: #F8FAFC; }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #0F172A;
-      color: #F8FAFC;
-    }
-
-    /* BARRA SUPERIOR */
     .header-bar {
-      height: 60px;
-      background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
-      border-bottom: 1px solid #334155;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      position: relative;
-      z-index: 100;
+      height: 60px; background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
+      border-bottom: 1px solid #334155; padding: 0 20px; display: flex; align-items: center;
+      justify-content: space-between; gap: 16px; position: relative; z-index: 100;
     }
-
-    .title-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+    .title-group { display: flex; align-items: center; gap: 12px; }
     .title-icon {
-      width: 36px;
-      height: 36px;
-      background: rgba(37, 99, 235, 0.2);
-      border: 1px solid #3B82F6;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #60A5FA;
-      font-size: 1.1rem;
+      width: 36px; height: 36px; background: rgba(37, 99, 235, 0.2); border: 1px solid #3B82F6;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #60A5FA; font-size: 1.1rem;
     }
+    .title-text h1 { font-size: 0.95rem; font-weight: 700; color: #FFFFFF; text-transform: uppercase; }
+    .title-text .update-tag { font-size: 0.72rem; color: #94A3B8; display: flex; align-items: center; gap: 6px; }
+    .update-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; display: inline-block; }
+    .update-tag .dot.stale { background: #F59E0B; }
+    .update-tag .dot.error { background: #EF4444; }
 
-    .title-text h1 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #FFFFFF;
-      text-transform: uppercase;
-    }
-
-    .title-text .update-tag {
-      font-size: 0.72rem;
-      color: #94A3B8;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* BOTONES DE ACCIÓN */
-    .actions-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .actions-group { display: flex; align-items: center; gap: 10px; }
     .btn-action {
-      background: #1E293B;
-      border: 1px solid #475569;
-      color: #FFFFFF;
-      padding: 7px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      background: #1E293B; border: 1px solid #475569; color: #FFFFFF; padding: 7px 12px; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
     }
+    .btn-action:hover { background: #334155; }
+    .btn-primary { background: #2563EB; border-color: #3B82F6; }
+    .btn-primary:hover { background: #1D4ED8; }
+    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .btn-action:hover {
-      background: #334155;
-    }
+    .viewport-container { width: 100%; height: calc(100vh - 60px); position: relative; background-color: #0F172A; }
+    .viewport-container iframe { width: 100%; height: 100%; border: none; display: block; }
 
-    .btn-primary {
-      background: #2563EB;
-      border-color: #3B82F6;
-    }
-
-    .btn-primary:hover {
-      background: #1D4ED8;
-    }
-
-    /* CONTENEDOR PRINCIPAL DEL POWER BI */
-    .viewport-container {
-      width: 100%;
-      height: calc(100vh - 60px);
-      position: relative;
-      background-color: #0F172A;
-    }
-
-    .viewport-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-
-    /* MODAL DE EXPORTACIÓN A PDF */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 200;
+      justify-content: center; align-items: center;
     }
-
     .modal-card {
-      background: #1E293B;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      width: 480px;
-      max-width: 90%;
-      padding: 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      background: #1E293B; border: 1px solid #334155; border-radius: 12px; width: 480px; max-width: 90%;
+      padding: 24px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
-
-    .modal-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: #94A3B8;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
+    .modal-card h2 { font-size: 1.1rem; margin-bottom: 8px; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
+    .modal-note { font-size: 0.75rem; color: #94A3B8; margin-bottom: 16px; line-height: 1.4; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 600; }
     .checkbox-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: #0F172A;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #334155;
+      display: flex; flex-direction: column; gap: 10px; background: #0F172A; padding: 12px;
+      border-radius: 6px; border: 1px solid #334155;
     }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #E2E8F0; cursor: pointer; }
+    .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #2563EB; cursor: pointer; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .export-status { font-size: 0.75rem; color: #60A5FA; margin-top: 10px; min-height: 16px; }
 
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
-      color: #E2E8F0;
-      cursor: pointer;
-    }
-
-    .checkbox-item input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #2563EB;
-      cursor: pointer;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    /* ESTILOS DE IMPRESIÓN */
     @media print {
-      .header-bar, .modal-overlay {
-        display: none !important;
-      }
-      .viewport-container {
-        height: 100vh !important;
-      }
+      .header-bar, .modal-overlay { display: none !important; }
+      .viewport-container { height: 100vh !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR -->
   <header class="header-bar">
-    
     <div class="title-group">
-      <div class="title-icon">
-        <i class="fa-solid fa-flask-vial"></i>
-      </div>
+      <div class="title-icon"><i class="fa-solid fa-flask-vial"></i></div>
       <div class="title-text">
         <h1>Dashboard de Control de Pruebas de I+D</h1>
         <div class="update-tag">
-          <i class="fa-regular fa-clock"></i>
-          <span>Última actualización: <strong id="liveTimestamp">Cargando...</strong></span>
+          <span class="dot" id="statusDot"></span>
+          <span>Última actualización de datos: <strong id="liveTimestamp">Consultando...</strong></span>
         </div>
       </div>
     </div>
 
-    <!-- ACCIONES -->
     <div class="actions-group">
       <button class="btn-action" onclick="openExportModal()">
         <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
       </button>
-
       <button class="btn-action btn-primary" onclick="maximizeView()">
         <i class="fa-solid fa-expand"></i> Ampliar Vista
       </button>
     </div>
-
   </header>
 
-  <!-- VISOR POWER BI (PANORÁMICO AUTOMÁTICO) -->
   <main class="viewport-container" id="powerbiContainer">
-    <iframe 
+    <iframe
       id="powerbiFrame"
-      title="RR_ACTUALIZADO" 
-      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageView=fitToWidth&navContentPaneEnabled=true" 
+      title="RR_ACTUALIZADO"
+      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageView=fitToWidth&navContentPaneEnabled=true"
       allow="fullscreen"
       allowFullScreen="true">
     </iframe>
   </main>
 
-  <!-- MODAL DE EXPORTACIÓN A PDF CON SELECCIÓN DE HOJAS -->
   <div class="modal-overlay" id="exportModal">
     <div class="modal-card">
       <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
+      <p class="modal-note">
+        Cada hoja seleccionada se abrirá en el visor y se lanzará el diálogo de impresión del navegador
+        (elige "Guardar como PDF"). Si seleccionas varias, se procesan una por una, en orden.
+      </p>
 
       <div class="form-group">
         <label>Selecciona las hojas del reporte a incluir:</label>
@@ -280,9 +131,11 @@
         </div>
       </div>
 
+      <div class="export-status" id="exportStatus"></div>
+
       <div class="modal-actions">
         <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
-        <button class="btn-action btn-primary" onclick="triggerPrint()">
+        <button class="btn-action btn-primary" id="btnGenerarPdf" onclick="startExport()">
           <i class="fa-solid fa-download"></i> Generar PDF
         </button>
       </div>
@@ -290,48 +143,133 @@
   </div>
 
   <script>
-    // 1. FECHA Y HORA DINÁMICA AUTOMÁTICA
-    function updateTimestamp() {
-      const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
+    // =========================================================
+    // CONFIGURACIÓN — RELLENA ESTOS 2 BLOQUES CON TUS DATOS REALES
+    // =========================================================
 
-      document.getElementById('liveTimestamp').innerText = `${day}/${month}/${year} - ${hours}:${minutes} hrs`;
+    // 1) URL del Web App de Apps Script que devuelve la fecha de última
+    //    edición de tu Google Sheet (fuente del Power BI), como JSON:
+    //    { "lastUpdated": "2026-08-12T14:30:00Z" }
+    //    Despliega tu Apps Script como "Aplicación web" (no solo lo subas a GitHub,
+    //    GitHub solo guarda el código, necesitas la URL de /exec publicada).
+    const APPS_SCRIPT_STATUS_URL = "PON_AQUI_TU_URL_DE_APPS_SCRIPT_/exec";
+
+    // 2) reportId y ctid base (los mismos del iframe original)
+    const REPORT_ID = "f069fa6a-322d-4941-8cff-d903458133b4";
+    const CTID = "3e4a937b-236b-483a-8179-3792d2dfe299";
+
+    // 3) pageName interno de cada hoja del reporte. Para obtenerlo:
+    //    abre el reporte en powerbi.com, entra a cada pestaña y copia el
+    //    valor de "pageName=" que aparece en la URL del navegador
+    //    (NO es el nombre visible de la pestaña, es un código tipo "ReportSectionabc123").
+    const PAGE_IDS = {
+      resultados:   "PON_AQUI_pageName_DE_RESULTADOS",
+      consumo:      "PON_AQUI_pageName_DE_CONSUMO",
+      arenaPiedra:  "PON_AQUI_pageName_DE_ARENA_PIEDRA"
+    };
+
+    // =========================================================
+
+    function buildUrl(pageName) {
+      let base = `https://app.powerbi.com/reportEmbed?reportId=${REPORT_ID}&autoAuth=true&ctid=${CTID}&pageView=fitToWidth&navContentPaneEnabled=true`;
+      if (pageName && !pageName.startsWith("PON_AQUI")) {
+        base += `&pageName=${pageName}`;
+      }
+      return base;
     }
 
-    // Actualiza la fecha y hora en tiempo real al abrir
-    updateTimestamp();
+    // ---- 1. TIMESTAMP REAL DE ACTUALIZACIÓN (vía Apps Script) ----
+    async function updateTimestamp() {
+      const el = document.getElementById('liveTimestamp');
+      const dot = document.getElementById('statusDot');
 
-    // 2. MODAL Y EXPORTACIÓN SELECTIVA DE HOJAS A PDF
+      if (APPS_SCRIPT_STATUS_URL.startsWith("PON_AQUI")) {
+        el.innerText = "URL de Apps Script no configurada";
+        dot.className = "dot error";
+        return;
+      }
+
+      try {
+        const res = await fetch(APPS_SCRIPT_STATUS_URL);
+        if (!res.ok) throw new Error("Respuesta no OK");
+        const data = await res.json();
+        const d = new Date(data.lastUpdated);
+        const formatted = d.toLocaleString('es-PE', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        el.innerText = `${formatted} hrs`;
+        dot.className = "dot";
+      } catch (err) {
+        el.innerText = "No se pudo consultar la fecha";
+        dot.className = "dot error";
+        console.error("Error consultando timestamp:", err);
+      }
+    }
+
+    updateTimestamp();
+    setInterval(updateTimestamp, 5 * 60 * 1000); // refresca cada 5 min
+
+    // ---- 2. MODAL ----
     function openExportModal() {
       document.getElementById('exportModal').style.display = 'flex';
+      document.getElementById('exportStatus').innerText = "";
     }
-
     function closeExportModal() {
       document.getElementById('exportModal').style.display = 'none';
     }
 
-    function triggerPrint() {
+    // ---- 3. EXPORTACIÓN POR HOJA (navega el iframe y lanza impresión) ----
+    async function startExport() {
+      const selected = [];
+      if (document.getElementById('chkResultados').checked) selected.push({ name: "RESULTADOS", pageId: PAGE_IDS.resultados });
+      if (document.getElementById('chkConsumo').checked) selected.push({ name: "CONSUMO", pageId: PAGE_IDS.consumo });
+      if (document.getElementById('chkArenaPiedra').checked) selected.push({ name: "ARENA_PIEDRA", pageId: PAGE_IDS.arenaPiedra });
+
+      if (selected.length === 0) {
+        document.getElementById('exportStatus').innerText = "Selecciona al menos una hoja.";
+        return;
+      }
+
+      const btn = document.getElementById('btnGenerarPdf');
+      const status = document.getElementById('exportStatus');
+      btn.disabled = true;
       closeExportModal();
-      window.print(); // Dispara el diálogo del navegador para guardar a PDF
+
+      const frame = document.getElementById('powerbiFrame');
+      const originalSrc = frame.src;
+
+      for (let i = 0; i < selected.length; i++) {
+        const page = selected[i];
+        status.innerText = `Preparando "${page.name}" (${i + 1}/${selected.length})...`;
+
+        frame.src = buildUrl(page.pageId);
+        await waitMs(2500); // da tiempo a que cargue la página del reporte
+
+        // Cada hoja se imprime por separado: el navegador abrirá el diálogo
+        // de "Guardar como PDF" una vez por hoja. Guarda cada archivo con
+        // un nombre distinto (ej: RESULTADOS.pdf, CONSUMO.pdf...).
+        window.print();
+
+        await waitMs(800);
+      }
+
+      frame.src = originalSrc;
+      btn.disabled = false;
     }
 
-    // 3. PANTALLA COMPLETA
+    function waitMs(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // ---- 4. PANTALLA COMPLETA ----
     function maximizeView() {
       const container = document.getElementById('powerbiContainer');
       if (!document.fullscreenElement) {
-        if (container.requestFullscreen) {
-          container.requestFullscreen();
-        } else if (container.webkitRequestFullscreen) {
-          container.webkitRequestFullscreen();
-        }
+        if (container.requestFullscreen) container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
       }
     }
   </script>
