@@ -1,335 +1,518 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DASHBOARD DE CONTROL DE PRUEBAS DE I+D</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASHBOARD DE CONTROL DE PRUEBAS DE I+D</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background-color: #0F172A; color: #F8FAFC; }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
 
-    .header-bar {
-      height: 60px; background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
-      border-bottom: 1px solid #334155; padding: 0 20px; display: flex; align-items: center;
-      justify-content: space-between; gap: 16px; position: relative; z-index: 100;
-    }
-    .title-group { display: flex; align-items: center; gap: 12px; }
-    .title-icon {
-      width: 36px; height: 36px; background: rgba(37, 99, 235, 0.2); border: 1px solid #3B82F6;
-      border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #60A5FA; font-size: 1.1rem;
-    }
-    .title-text h1 { font-size: 0.95rem; font-weight: 700; color: #FFFFFF; text-transform: uppercase; }
-    .title-text .update-tag { font-size: 0.72rem; color: #94A3B8; display: flex; align-items: center; gap: 6px; }
-    .update-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; display: inline-block; }
-    .update-tag .dot.stale { background: #F59E0B; }
-    .update-tag .dot.error { background: #EF4444; }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0F172A;
+            color: #F8FAFC;
+        }
 
-    .actions-group { display: flex; align-items: center; gap: 10px; }
-    .btn-action {
-      background: #1E293B; border: 1px solid #475569; color: #FFFFFF; padding: 7px 12px; border-radius: 6px;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
-    }
-    .btn-action:hover { background: #334155; }
-    .btn-primary { background: #2563EB; border-color: #3B82F6; }
-    .btn-primary:hover { background: #1D4ED8; }
-    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .header-bar {
+            height: 60px;
+            background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
+            border-bottom: 1px solid #334155;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            z-index: 100;
+        }
 
-    .viewport-container { width: 100%; height: calc(100vh - 60px); position: relative; background-color: #0F172A; }
-    .viewport-container iframe { width: 100%; height: 100%; border: none; display: block; }
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 200;
-      justify-content: center; align-items: center;
-    }
-    .modal-card {
-      background: #1E293B; border: 1px solid #334155; border-radius: 12px; width: 480px; max-width: 90%;
-      padding: 24px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
-    .modal-card h2 { font-size: 1.1rem; margin-bottom: 8px; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
-    .modal-note { font-size: 0.75rem; color: #94A3B8; margin-bottom: 16px; line-height: 1.4; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 0.8rem; color: #94A3B8; margin-bottom: 6px; font-weight: 600; }
-    .checkbox-list {
-      display: flex; flex-direction: column; gap: 10px; background: #0F172A; padding: 12px;
-      border-radius: 6px; border: 1px solid #334155;
-    }
-    .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #E2E8F0; cursor: pointer; }
-    .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #2563EB; cursor: pointer; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    .export-status { font-size: 0.75rem; color: #60A5FA; margin-top: 10px; min-height: 16px; }
+        .title-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid #3B82F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60A5FA;
+            font-size: 1.1rem;
+        }
 
-    /* ------------------------------------------------------------
+        .title-text h1 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-transform: uppercase;
+        }
+
+        .title-text .update-tag {
+            font-size: 0.72rem;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .update-tag .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22C55E;
+            display: inline-block;
+        }
+
+        .update-tag .dot.stale {
+            background: #F59E0B;
+        }
+
+        .update-tag .dot.error {
+            background: #EF4444;
+        }
+
+        .actions-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: #1E293B;
+            border: 1px solid #475569;
+            color: #FFFFFF;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #334155;
+        }
+
+        .btn-primary {
+            background: #2563EB;
+            border-color: #3B82F6;
+        }
+
+        .btn-primary:hover {
+            background: #1D4ED8;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .viewport-container {
+            width: 100%;
+            height: calc(100vh - 60px);
+            position: relative;
+            background-color: #0F172A;
+        }
+
+        .viewport-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-card {
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            width: 480px;
+            max-width: 90%;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-note {
+            font-size: 0.75rem;
+            color: #94A3B8;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #94A3B8;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #0F172A;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #E2E8F0;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #2563EB;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .export-status {
+            font-size: 0.75rem;
+            color: #60A5FA;
+            margin-top: 10px;
+            min-height: 16px;
+        }
+
+        /* ------------------------------------------------------------
        CONTENEDOR DE IMPRESIÓN
        Oculto en pantalla. Solo se vuelve visible durante @media print,
        y ahí es lo ÚNICO que se ve, así el navegador combina TODOS los
        iframes que metamos dentro en un solo documento/PDF con varias
        páginas (una por hoja seleccionada).
     ------------------------------------------------------------- */
-    #printContainer { display: none; }
+        #printContainer {
+            display: none;
+        }
 
-    @media print {
-      .header-bar, .modal-overlay, .viewport-container { display: none !important; }
+        @media print {
 
-      #printContainer { display: block !important; }
-      #printContainer iframe {
-        width: 100%;
-        height: 100vh;
-        border: none;
-        display: block;
-        page-break-after: always;
-      }
-      #printContainer iframe:last-child { page-break-after: auto; }
-    }
-  </style>
+            .header-bar,
+            .modal-overlay,
+            .viewport-container {
+                display: none !important;
+            }
+
+            #printContainer {
+                display: block !important;
+            }
+
+            #printContainer iframe {
+                width: 100%;
+                height: 100vh;
+                border: none;
+                display: block;
+                page-break-after: always;
+            }
+
+            #printContainer iframe:last-child {
+                page-break-after: auto;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <header class="header-bar">
-    <div class="title-group">
-      <div class="title-icon"><i class="fa-solid fa-flask-vial"></i></div>
-      <div class="title-text">
-        <h1>Dashboard de Control de Pruebas de I+D</h1>
-        <div class="update-tag">
-          <span class="dot" id="statusDot"></span>
-          <span>Última actualización de datos: <strong id="liveTimestamp">Consultando...</strong></span>
+    <header class="header-bar">
+        <div class="title-group">
+            <div class="title-icon"><i class="fa-solid fa-flask-vial"></i></div>
+            <div class="title-text">
+                <h1>Dashboard de Control de Pruebas de I+D</h1>
+                <div class="update-tag">
+                    <span class="dot" id="statusDot"></span>
+                    <span>Última actualización de datos: <strong id="liveTimestamp">Consultando...</strong></span>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="actions-group">
-      <button class="btn-action" id="btnExportModal" onclick="openExportModal()">
-        <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
-      </button>
-      <button class="btn-action btn-primary" onclick="maximizeView()">
-        <i class="fa-solid fa-expand"></i> Ampliar Vista
-      </button>
-    </div>
-  </header>
-
-  <main class="viewport-container" id="powerbiContainer">
-    <iframe
-      id="powerbiFrame"
-      title="RR_ACTUALIZADO"
-      src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageView=fitToWidth&navContentPaneEnabled=true"
-      allow="fullscreen"
-      allowFullScreen="true">
-    </iframe>
-  </main>
-
-  <!-- Contenedor donde se cargan las hojas a exportar. Oculto salvo al imprimir. -->
-  <div id="printContainer"></div>
-
-  <div class="modal-overlay" id="exportModal">
-    <div class="modal-card">
-      <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
-      <p class="modal-note">
-        Se abrirá UN SOLO diálogo de impresión con todas las hojas seleccionadas, una por página.
-        Elige "Guardar como PDF" y listo: un solo archivo con todas las hojas juntas.
-      </p>
-
-      <div class="form-group">
-        <label>Selecciona las hojas del reporte a incluir:</label>
-        <div class="checkbox-list">
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkResultados" checked>
-            <span>📄 Hoja: RESULTADOS</span>
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkConsumo" checked>
-            <span>📄 Hoja: CONSUMO</span>
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkArenaPiedra" checked>
-            <span>📄 Hoja: ARENA_PIEDRA</span>
-          </label>
+        <div class="actions-group">
+            <button class="btn-action" id="btnExportModal" onclick="openExportModal()">
+                <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i> Exportar a PDF
+            </button>
+            <button class="btn-action btn-primary" onclick="maximizeView()">
+                <i class="fa-solid fa-expand"></i> Ampliar Vista
+            </button>
         </div>
-      </div>
+    </header>
 
-      <div class="export-status" id="exportStatus"></div>
+    <main class="viewport-container" id="powerbiContainer">
+        <iframe id="powerbiFrame" title="RR_ACTUALIZADO"
+            src="https://app.powerbi.com/reportEmbed?reportId=f069fa6a-322d-4941-8cff-d903458133b4&autoAuth=true&ctid=3e4a937b-236b-483a-8179-3792d2dfe299&pageView=fitToWidth&navContentPaneEnabled=true"
+            allow="fullscreen" allowFullScreen="true">
+        </iframe>
+    </main>
 
-      <div class="modal-actions">
-        <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
-        <button class="btn-action btn-primary" id="btnGenerarPdf" onclick="startExport()">
-          <i class="fa-solid fa-download"></i> Generar PDF
-        </button>
-      </div>
+    <!-- Contenedor donde se cargan las hojas a exportar. Oculto salvo al imprimir. -->
+    <div id="printContainer"></div>
+
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal-card">
+            <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
+            <p class="modal-note">
+                Se abrirá UN SOLO diálogo de impresión con todas las hojas seleccionadas, una por página.
+                Elige "Guardar como PDF" y listo: un solo archivo con todas las hojas juntas.
+            </p>
+
+            <div class="form-group">
+                <label>Selecciona las hojas del reporte a incluir:</label>
+                <div class="checkbox-list">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="chkResultados" checked>
+                        <span>📄 Hoja: RESULTADOS</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="chkConsumo" checked>
+                        <span>📄 Hoja: CONSUMO</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="chkArenaPiedra" checked>
+                        <span>📄 Hoja: ARENA_PIEDRA</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="export-status" id="exportStatus"></div>
+
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
+                <button class="btn-action btn-primary" id="btnGenerarPdf" onclick="startExport()">
+                    <i class="fa-solid fa-download"></i> Generar PDF
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // =========================================================
-    // CONFIGURACIÓN — RELLENA ESTOS 2 BLOQUES CON TUS DATOS REALES
-    // =========================================================
+    <script>
+        // =========================================================
+        // CONFIGURACIÓN — RELLENA ESTOS 2 BLOQUES CON TUS DATOS REALES
+        // =========================================================
 
-    // 1) URL del Web App de Apps Script que devuelve la fecha de última
-    //    edición de tu Google Sheet (fuente del Power BI), como JSON:
-    //    { "lastUpdated": "2026-08-12T14:30:00Z" }
-    //    Despliega tu Apps Script como "Aplicación web" (no solo lo subas a GitHub,
-    //    GitHub solo guarda el código, necesitas la URL de /exec publicada).
-    const APPS_SCRIPT_STATUS_URL = "PON_AQUI_TU_URL_DE_APPS_SCRIPT_/exec";
+        // 1) URL del Web App de Apps Script que devuelve la fecha de última
+        //    edición de tu Google Sheet (fuente del Power BI), como JSON:
+        //    { "lastUpdated": "2026-08-12T14:30:00Z" }
+        //    Despliega tu Apps Script como "Aplicación web" (no solo lo subas a GitHub,
+        //    GitHub solo guarda el código, necesitas la URL de /exec publicada).
+        const APPS_SCRIPT_STATUS_URL = "PON_AQUI_TU_URL_DE_APPS_SCRIPT_/exec";
 
-    // 2) reportId y ctid base (los mismos del iframe original)
-    const REPORT_ID = "f069fa6a-322d-4941-8cff-d903458133b4";
-    const CTID = "3e4a937b-236b-483a-8179-3792d2dfe299";
+        // 2) reportId y ctid base (los mismos del iframe original)
+        const REPORT_ID = "f069fa6a-322d-4941-8cff-d903458133b4";
+        const CTID = "3e4a937b-236b-483a-8179-3792d2dfe299";
 
-    // 3) pageName interno de cada hoja del reporte. Para obtenerlo:
-    //    abre el reporte en powerbi.com, entra a cada pestaña y copia el
-    //    valor de "pageName=" que aparece en la URL del navegador
-    //    (NO es el nombre visible de la pestaña, es un código tipo "ReportSectionabc123").
-    const PAGE_IDS = {
-      resultados:   "PON_AQUI_pageName_DE_RESULTADOS",
-      consumo:      "PON_AQUI_pageName_DE_CONSUMO",
-      arenaPiedra:  "PON_AQUI_pageName_DE_ARENA_PIEDRA"
-    };
+        // 3) pageName interno de cada hoja del reporte. Para obtenerlo:
+        //    abre el reporte en powerbi.com, entra a cada pestaña y copia el
+        //    valor de "pageName=" que aparece en la URL del navegador
+        //    (NO es el nombre visible de la pestaña, es un código tipo "ReportSectionabc123").
+        const PAGE_IDS = {
+            resultados: "PON_AQUI_pageName_DE_RESULTADOS",
+            consumo: "PON_AQUI_pageName_DE_CONSUMO",
+            arenaPiedra: "PON_AQUI_pageName_DE_ARENA_PIEDRA"
+        };
 
-    // Tiempo máximo de espera (ms) para que cada hoja termine de cargar
-    // antes de imprimir, por si el evento "load" del iframe no dispara
-    // (pasa seguido con contenido de otro dominio, como Power BI).
-    const LOAD_TIMEOUT_MS = 4000;
+        // Tiempo máximo de espera (ms) para que cada hoja termine de cargar
+        // antes de imprimir, por si el evento "load" del iframe no dispara
+        // (pasa seguido con contenido de otro dominio, como Power BI).
+        const LOAD_TIMEOUT_MS = 4000;
 
-    // =========================================================
+        // =========================================================
 
-    function buildUrl(pageName) {
-      let base = `https://app.powerbi.com/reportEmbed?reportId=${REPORT_ID}&autoAuth=true&ctid=${CTID}&pageView=fitToWidth&navContentPaneEnabled=true`;
-      if (pageName && !pageName.startsWith("PON_AQUI")) {
-        base += `&pageName=${pageName}`;
-      }
-      return base;
-    }
+        function buildUrl(pageName) {
+            let base = `https://app.powerbi.com/reportEmbed?reportId=${REPORT_ID}&autoAuth=true&ctid=${CTID}&pageView=fitToWidth&navContentPaneEnabled=true`;
+            if (pageName && !pageName.startsWith("PON_AQUI")) {
+                base += `&pageName=${pageName}`;
+            }
+            return base;
+        }
 
-    // ---- 1. TIMESTAMP REAL DE ACTUALIZACIÓN (vía Apps Script) ----
-    async function updateTimestamp() {
-      const el = document.getElementById('liveTimestamp');
-      const dot = document.getElementById('statusDot');
+        // ---- 1. TIMESTAMP REAL DE ACTUALIZACIÓN (vía Apps Script) ----
+        async function updateTimestamp() {
+            const el = document.getElementById('liveTimestamp');
+            const dot = document.getElementById('statusDot');
 
-      if (APPS_SCRIPT_STATUS_URL.startsWith("PON_AQUI")) {
-        el.innerText = "URL de Apps Script no configurada";
-        dot.className = "dot error";
-        return;
-      }
+            if (APPS_SCRIPT_STATUS_URL.startsWith("PON_AQUI")) {
+                el.innerText = "URL de Apps Script no configurada";
+                dot.className = "dot error";
+                return;
+            }
 
-      try {
-        const res = await fetch(APPS_SCRIPT_STATUS_URL);
-        if (!res.ok) throw new Error("Respuesta no OK");
-        const data = await res.json();
-        const d = new Date(data.lastUpdated);
-        const formatted = d.toLocaleString('es-PE', {
-          day: '2-digit', month: '2-digit', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
+            try {
+                const res = await fetch(APPS_SCRIPT_STATUS_URL);
+                if (!res.ok) throw new Error("Respuesta no OK");
+                const data = await res.json();
+                const d = new Date(data.lastUpdated);
+                const formatted = d.toLocaleString('es-PE', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                el.innerText = `${formatted} hrs`;
+                dot.className = "dot";
+            } catch (err) {
+                el.innerText = "No se pudo consultar la fecha";
+                dot.className = "dot error";
+                console.error("Error consultando timestamp:", err);
+            }
+        }
+
+        updateTimestamp();
+        setInterval(updateTimestamp, 5 * 60 * 1000); // refresca cada 5 min
+
+        // ---- 2. MODAL ----
+        function openExportModal() {
+            document.getElementById('exportModal').style.display = 'flex';
+            document.getElementById('exportStatus').innerText = "";
+        }
+        function closeExportModal() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        // ---- 3. EXPORTACIÓN COMBINADA EN UN SOLO PDF ----
+        // Carga cada hoja seleccionada en su propio iframe dentro de
+        // #printContainer y dispara UN SOLO window.print(). El navegador
+        // imprime cada iframe como una página distinta del mismo documento,
+        // así que al "Guardar como PDF" sale un único archivo con todas
+        // las hojas elegidas, en el orden en que se marcaron.
+        async function startExport() {
+            const selected = [];
+            if (document.getElementById('chkResultados').checked) selected.push({ name: "RESULTADOS", pageId: PAGE_IDS.resultados });
+            if (document.getElementById('chkConsumo').checked) selected.push({ name: "CONSUMO", pageId: PAGE_IDS.consumo });
+            if (document.getElementById('chkArenaPiedra').checked) selected.push({ name: "ARENA_PIEDRA", pageId: PAGE_IDS.arenaPiedra });
+
+            const status = document.getElementById('exportStatus');
+
+            if (selected.length === 0) {
+                status.innerText = "Selecciona al menos una hoja.";
+                return;
+            }
+
+            const btn = document.getElementById('btnGenerarPdf');
+            btn.disabled = true;
+            status.innerText = `Preparando ${selected.length} hoja(s)...`;
+
+            const printContainer = document.getElementById('printContainer');
+            printContainer.innerHTML = ""; // limpia intentos anteriores
+
+            // Crea un iframe por cada hoja seleccionada y espera a que cargue
+            // (o al timeout, lo que ocurra primero — Power BI no siempre
+            // dispara "load" de forma confiable por ser contenido externo).
+            const loadPromises = selected.map((page, index) => {
+                return new Promise((resolve) => {
+                    const frame = document.createElement('iframe');
+                    frame.setAttribute('title', page.name);
+                    frame.src = buildUrl(page.pageId);
+
+                    let done = false;
+                    const finish = () => {
+                        if (done) return;
+                        done = true;
+                        resolve();
+                    };
+
+                    frame.addEventListener('load', finish);
+                    setTimeout(finish, LOAD_TIMEOUT_MS);
+
+                    printContainer.appendChild(frame);
+                });
+            });
+
+            await Promise.all(loadPromises);
+
+            status.innerText = "Abriendo diálogo de impresión (elige 'Guardar como PDF')...";
+
+            // Pequeño respiro extra para que Power BI termine de renderizar
+            // los visuales antes de tomar la "foto" de impresión.
+            await waitMs(1500);
+
+            window.print();
+        }
+
+        // Limpieza después de imprimir (o cancelar el diálogo), sin importar
+        // cómo se cerró — reutilizamos 'afterprint', que el navegador dispara
+        // tanto si se guarda el PDF como si se cancela.
+        window.addEventListener('afterprint', () => {
+            document.getElementById('printContainer').innerHTML = "";
+            document.getElementById('btnGenerarPdf').disabled = false;
+            document.getElementById('exportStatus').innerText = "";
+            closeExportModal();
         });
-        el.innerText = `${formatted} hrs`;
-        dot.className = "dot";
-      } catch (err) {
-        el.innerText = "No se pudo consultar la fecha";
-        dot.className = "dot error";
-        console.error("Error consultando timestamp:", err);
-      }
-    }
 
-    updateTimestamp();
-    setInterval(updateTimestamp, 5 * 60 * 1000); // refresca cada 5 min
+        function waitMs(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-    // ---- 2. MODAL ----
-    function openExportModal() {
-      document.getElementById('exportModal').style.display = 'flex';
-      document.getElementById('exportStatus').innerText = "";
-    }
-    function closeExportModal() {
-      document.getElementById('exportModal').style.display = 'none';
-    }
-
-    // ---- 3. EXPORTACIÓN COMBINADA EN UN SOLO PDF ----
-    // Carga cada hoja seleccionada en su propio iframe dentro de
-    // #printContainer y dispara UN SOLO window.print(). El navegador
-    // imprime cada iframe como una página distinta del mismo documento,
-    // así que al "Guardar como PDF" sale un único archivo con todas
-    // las hojas elegidas, en el orden en que se marcaron.
-    async function startExport() {
-      const selected = [];
-      if (document.getElementById('chkResultados').checked) selected.push({ name: "RESULTADOS", pageId: PAGE_IDS.resultados });
-      if (document.getElementById('chkConsumo').checked) selected.push({ name: "CONSUMO", pageId: PAGE_IDS.consumo });
-      if (document.getElementById('chkArenaPiedra').checked) selected.push({ name: "ARENA_PIEDRA", pageId: PAGE_IDS.arenaPiedra });
-
-      const status = document.getElementById('exportStatus');
-
-      if (selected.length === 0) {
-        status.innerText = "Selecciona al menos una hoja.";
-        return;
-      }
-
-      const btn = document.getElementById('btnGenerarPdf');
-      btn.disabled = true;
-      status.innerText = `Preparando ${selected.length} hoja(s)...`;
-
-      const printContainer = document.getElementById('printContainer');
-      printContainer.innerHTML = ""; // limpia intentos anteriores
-
-      // Crea un iframe por cada hoja seleccionada y espera a que cargue
-      // (o al timeout, lo que ocurra primero — Power BI no siempre
-      // dispara "load" de forma confiable por ser contenido externo).
-      const loadPromises = selected.map((page, index) => {
-        return new Promise((resolve) => {
-          const frame = document.createElement('iframe');
-          frame.setAttribute('title', page.name);
-          frame.src = buildUrl(page.pageId);
-
-          let done = false;
-          const finish = () => {
-            if (done) return;
-            done = true;
-            resolve();
-          };
-
-          frame.addEventListener('load', finish);
-          setTimeout(finish, LOAD_TIMEOUT_MS);
-
-          printContainer.appendChild(frame);
-        });
-      });
-
-      await Promise.all(loadPromises);
-
-      status.innerText = "Abriendo diálogo de impresión (elige 'Guardar como PDF')...";
-
-      // Pequeño respiro extra para que Power BI termine de renderizar
-      // los visuales antes de tomar la "foto" de impresión.
-      await waitMs(1500);
-
-      window.print();
-    }
-
-    // Limpieza después de imprimir (o cancelar el diálogo), sin importar
-    // cómo se cerró — reutilizamos 'afterprint', que el navegador dispara
-    // tanto si se guarda el PDF como si se cancela.
-    window.addEventListener('afterprint', () => {
-      document.getElementById('printContainer').innerHTML = "";
-      document.getElementById('btnGenerarPdf').disabled = false;
-      document.getElementById('exportStatus').innerText = "";
-      closeExportModal();
-    });
-
-    function waitMs(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // ---- 4. PANTALLA COMPLETA ----
-    function maximizeView() {
-      const container = document.getElementById('powerbiContainer');
-      if (!document.fullscreenElement) {
-        if (container.requestFullscreen) container.requestFullscreen();
-        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-      } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-      }
-    }
-  </script>
+        // ---- 4. PANTALLA COMPLETA ----
+        function maximizeView() {
+            const container = document.getElementById('powerbiContainer');
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) container.requestFullscreen();
+                else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+    </script>
 
 </body>
+
 </html>
