@@ -162,114 +162,59 @@
             background: #1E293B;
             border: 1px solid #334155;
             border-radius: 12px;
-            width: 480px;
-            max-width: 90%;
+            width: 500px;
+            max-width: 92%;
             padding: 24px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         .modal-card h2 {
             font-size: 1.1rem;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             color: #FFFFFF;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .modal-note {
-            font-size: 0.75rem;
-            color: #94A3B8;
-            margin-bottom: 16px;
+        .print-option-card {
+            background: #0F172A;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .print-option-card h3 {
+            font-size: 0.85rem;
+            color: #60A5FA;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-option-card p {
+            font-size: 0.78rem;
+            color: #CBD5E1;
             line-height: 1.4;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: #94A3B8;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .checkbox-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #0F172A;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-            color: #E2E8F0;
-            cursor: pointer;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #2563EB;
-            cursor: pointer;
+        .print-option-card kbd {
+            background: #1E293B;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 0.72rem;
+            color: #F8FAFC;
+            font-family: monospace;
         }
 
         .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
-        }
-
-        .export-status {
-            font-size: 0.75rem;
-            color: #60A5FA;
-            margin-top: 10px;
-            min-height: 16px;
-        }
-
-        /* ------------------------------------------------------------
-       CONTENEDOR DE IMPRESIÓN
-       Oculto en pantalla. Solo se vuelve visible durante @media print,
-       y ahí es lo ÚNICO que se ve, así el navegador combina TODOS los
-       iframes que metamos dentro en un solo documento/PDF con varias
-       páginas (una por hoja seleccionada).
-    ------------------------------------------------------------- */
-        #printContainer {
-            display: none;
-        }
-
-        @media print {
-
-            .header-bar,
-            .modal-overlay,
-            .viewport-container {
-                display: none !important;
-            }
-
-            #printContainer {
-                display: block !important;
-            }
-
-            #printContainer iframe {
-                width: 100%;
-                height: 100vh;
-                border: none;
-                display: block;
-                page-break-after: always;
-            }
-
-            #printContainer iframe:last-child {
-                page-break-after: auto;
-            }
+            margin-top: 18px;
         }
     </style>
 </head>
@@ -305,88 +250,34 @@
         </iframe>
     </main>
 
-    <!-- Contenedor donde se cargan las hojas a exportar. Oculto salvo al imprimir. -->
-    <div id="printContainer"></div>
-
     <div class="modal-overlay" id="exportModal">
         <div class="modal-card">
-            <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Exportar Hojas a PDF</h2>
-            <p class="modal-note">
-                Se abrirá UN SOLO diálogo de impresión con todas las hojas seleccionadas, una por página.
-                Elige "Guardar como PDF" y listo: un solo archivo con todas las hojas juntas.
-            </p>
+            <h2><i class="fa-solid fa-file-pdf" style="color: #EF4444;"></i> Opciones de Exportación a PDF</h2>
 
-            <div class="form-group">
-                <label>Selecciona las hojas del reporte a incluir:</label>
-                <div class="checkbox-list">
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="chkResultados" checked>
-                        <span>📄 Hoja: RESULTADOS</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="chkConsumo" checked>
-                        <span>📄 Hoja: CONSUMO</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="chkArenaPiedra" checked>
-                        <span>📄 Hoja: ARENA_PIEDRA</span>
-                    </label>
-                </div>
+            <div class="print-option-card">
+                <h3><i class="fa-solid fa-mouse-pointer"></i> Método 1: Imprimir desde esta página</h3>
+                <p>Haz <strong>clic derecho</strong> dentro del reporte y selecciona <strong>"Imprimir marco..."</strong>. Esto abrirá la ventana de impresión directa para guardar como PDF sin salir de la web.</p>
             </div>
 
-            <div class="export-status" id="exportStatus"></div>
+            <div class="print-option-card">
+                <h3><i class="fa-solid fa-arrow-up-right-from-square"></i> Método 2: Abrir en pestaña nueva</h3>
+                <p>Abre el reporte directamente en Power BI. Ahí puedes presionar <kbd>Ctrl</kbd> + <kbd>P</kbd> o usar el menú <strong>Archivo → Exportar → PDF</strong>.</p>
+            </div>
 
             <div class="modal-actions">
-                <button class="btn-action" onclick="closeExportModal()">Cancelar</button>
-                <button class="btn-action btn-primary" id="btnGenerarPdf" onclick="startExport()">
-                    <i class="fa-solid fa-download"></i> Generar PDF
+                <button class="btn-action" onclick="closeExportModal()">Cerrar</button>
+                <button class="btn-action btn-primary" onclick="openInNewTab()">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir en Pestaña Nueva
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // =========================================================
-        // CONFIGURACIÓN — RELLENA ESTOS 2 BLOQUES CON TUS DATOS REALES
-        // =========================================================
-
-        // 1) URL del Web App de Apps Script que devuelve la fecha de última
-        //    edición de tu Google Sheet (fuente del Power BI), como JSON:
-        //    { "lastUpdated": "2026-08-12T14:30:00Z" }
-        //    Despliega tu Apps Script como "Aplicación web" (no solo lo subas a GitHub,
-        //    GitHub solo guarda el código, necesitas la URL de /exec publicada).
         const APPS_SCRIPT_STATUS_URL = "PON_AQUI_TU_URL_DE_APPS_SCRIPT_/exec";
-
-        // 2) reportId y ctid base (los mismos del iframe original)
         const REPORT_ID = "f069fa6a-322d-4941-8cff-d903458133b4";
         const CTID = "3e4a937b-236b-483a-8179-3792d2dfe299";
 
-        // 3) pageName interno de cada hoja del reporte. Para obtenerlo:
-        //    abre el reporte en powerbi.com, entra a cada pestaña y copia el
-        //    valor de "pageName=" que aparece en la URL del navegador
-        //    (NO es el nombre visible de la pestaña, es un código tipo "ReportSectionabc123").
-        const PAGE_IDS = {
-            resultados: "PON_AQUI_pageName_DE_RESULTADOS",
-            consumo: "PON_AQUI_pageName_DE_CONSUMO",
-            arenaPiedra: "PON_AQUI_pageName_DE_ARENA_PIEDRA"
-        };
-
-        // Tiempo máximo de espera (ms) para que cada hoja termine de cargar
-        // antes de imprimir, por si el evento "load" del iframe no dispara
-        // (pasa seguido con contenido de otro dominio, como Power BI).
-        const LOAD_TIMEOUT_MS = 4000;
-
-        // =========================================================
-
-        function buildUrl(pageName) {
-            let base = `https://app.powerbi.com/reportEmbed?reportId=${REPORT_ID}&autoAuth=true&ctid=${CTID}&pageView=fitToWidth&navContentPaneEnabled=true`;
-            if (pageName && !pageName.startsWith("PON_AQUI")) {
-                base += `&pageName=${pageName}`;
-            }
-            return base;
-        }
-
-        // ---- 1. TIMESTAMP REAL DE ACTUALIZACIÓN (vía Apps Script) ----
         async function updateTimestamp() {
             const el = document.getElementById('liveTimestamp');
             const dot = document.getElementById('statusDot');
@@ -416,92 +307,22 @@
         }
 
         updateTimestamp();
-        setInterval(updateTimestamp, 5 * 60 * 1000); // refresca cada 5 min
+        setInterval(updateTimestamp, 5 * 60 * 1000);
 
-        // ---- 2. MODAL ----
         function openExportModal() {
             document.getElementById('exportModal').style.display = 'flex';
-            document.getElementById('exportStatus').innerText = "";
         }
+
         function closeExportModal() {
             document.getElementById('exportModal').style.display = 'none';
         }
 
-        // ---- 3. EXPORTACIÓN COMBINADA EN UN SOLO PDF ----
-        // Carga cada hoja seleccionada en su propio iframe dentro de
-        // #printContainer y dispara UN SOLO window.print(). El navegador
-        // imprime cada iframe como una página distinta del mismo documento,
-        // así que al "Guardar como PDF" sale un único archivo con todas
-        // las hojas elegidas, en el orden en que se marcaron.
-        async function startExport() {
-            const selected = [];
-            if (document.getElementById('chkResultados').checked) selected.push({ name: "RESULTADOS", pageId: PAGE_IDS.resultados });
-            if (document.getElementById('chkConsumo').checked) selected.push({ name: "CONSUMO", pageId: PAGE_IDS.consumo });
-            if (document.getElementById('chkArenaPiedra').checked) selected.push({ name: "ARENA_PIEDRA", pageId: PAGE_IDS.arenaPiedra });
-
-            const status = document.getElementById('exportStatus');
-
-            if (selected.length === 0) {
-                status.innerText = "Selecciona al menos una hoja.";
-                return;
-            }
-
-            const btn = document.getElementById('btnGenerarPdf');
-            btn.disabled = true;
-            status.innerText = `Preparando ${selected.length} hoja(s)...`;
-
-            const printContainer = document.getElementById('printContainer');
-            printContainer.innerHTML = ""; // limpia intentos anteriores
-
-            // Crea un iframe por cada hoja seleccionada y espera a que cargue
-            // (o al timeout, lo que ocurra primero — Power BI no siempre
-            // dispara "load" de forma confiable por ser contenido externo).
-            const loadPromises = selected.map((page, index) => {
-                return new Promise((resolve) => {
-                    const frame = document.createElement('iframe');
-                    frame.setAttribute('title', page.name);
-                    frame.src = buildUrl(page.pageId);
-
-                    let done = false;
-                    const finish = () => {
-                        if (done) return;
-                        done = true;
-                        resolve();
-                    };
-
-                    frame.addEventListener('load', finish);
-                    setTimeout(finish, LOAD_TIMEOUT_MS);
-
-                    printContainer.appendChild(frame);
-                });
-            });
-
-            await Promise.all(loadPromises);
-
-            status.innerText = "Abriendo diálogo de impresión (elige 'Guardar como PDF')...";
-
-            // Pequeño respiro extra para que Power BI termine de renderizar
-            // los visuales antes de tomar la "foto" de impresión.
-            await waitMs(1500);
-
-            window.print();
-        }
-
-        // Limpieza después de imprimir (o cancelar el diálogo), sin importar
-        // cómo se cerró — reutilizamos 'afterprint', que el navegador dispara
-        // tanto si se guarda el PDF como si se cancela.
-        window.addEventListener('afterprint', () => {
-            document.getElementById('printContainer').innerHTML = "";
-            document.getElementById('btnGenerarPdf').disabled = false;
-            document.getElementById('exportStatus').innerText = "";
+        function openInNewTab() {
+            const url = `https://app.powerbi.com/reportEmbed?reportId=${REPORT_ID}&autoAuth=true&ctid=${CTID}&pageView=fitToWidth&navContentPaneEnabled=true`;
+            window.open(url, '_blank');
             closeExportModal();
-        });
-
-        function waitMs(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // ---- 4. PANTALLA COMPLETA ----
         function maximizeView() {
             const container = document.getElementById('powerbiContainer');
             if (!document.fullscreenElement) {
